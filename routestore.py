@@ -39,3 +39,9 @@ def save(route_info):
     cursor.close()
     conn.close()
 
+
+def load(id):
+    conn = sqlite3.connect(database_path)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT route FROM DeliveryRoute WHERE id IS {id}")
+    return cursor.fetchall()[0][0]

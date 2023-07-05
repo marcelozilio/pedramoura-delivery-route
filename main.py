@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_restful import Resource, Api
 import google_api
 import routestore
+import json
 
 
 app = Flask(__name__)
@@ -36,7 +37,9 @@ class DeliveryRouteById(Resource):
 
     def get(self, id):
         # Pegar no banco de dados
-        return jsonify("implement this method")
+        response = make_response(routestore.load(id))
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 
 api.add_resource(DeliveryRoute, '/delivery-route')
