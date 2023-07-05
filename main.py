@@ -2,42 +2,36 @@ from flask import Flask, request, jsonify, make_response
 from flask_restful import Resource, Api
 import google_api
 import routestore
-import json
-
+import validation
 
 app = Flask(__name__)
 api = Api(app)
 
+pedramoura_location = "Rolante, RS, 95690-000, Brasil"
+
 
 class DeliveryRoute(Resource):
     def post(self):
-        origin = "Rolante, RS, 95690-000, Brasil"
-        destination = "Rolante, RS, 95690-000, Brasil"
+        enderecos = request.json['enderecos']
 
-        # Lista de endereços
-        waypoints = ["R. Ouro Preto, 408 - Jardim Floresta, Porto Alegre - RS, 91040-610, Brasil",
-                     "Av. Assis Brasil, 2611 - Cristo Redentor, Porto Alegre - RS, 91010-006, Brasil",
-                     "Av. Guilherme Schell, 6750 - Centro, Canoas - RS, 92310-564, Brasil"]
+        validation.validate_endereco_request(enderecos)
 
-        directions = google_api.create_route(origin, destination, waypoints)
-
-        # converte retorno da api para json
+        directions = google_api.create_route(pedramoura_location, enderecos)
         route_info = jsonify(directions)
 
-        # Salvar no banco de dados
         routestore.save(route_info)
 
         return route_info
 
 
 class DeliveryRouteById(Resource):
-    def delete(self, id):
-        # Deletar do banco de dados
-        jsonify("implement this method")
+    def delete(self, _id):
+        response = make_response(routestore.delete(_id))
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
-    def get(self, id):
-        # Pegar no banco de dados
-        response = make_response(routestore.load(id))
+    def get(self, _id):
+        response = make_response(routestore.get_by_id(_id))
         response.headers['Content-Type'] = 'application/json'
         return response
 

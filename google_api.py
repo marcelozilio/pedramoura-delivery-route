@@ -1,22 +1,19 @@
 import googlemaps
 from datetime import datetime
 
-api_key = 'chave-de-acesso'
+api_key = open('keys/googlemaps-api-key.txt')
 
 
-def create_route(origin, destination, waypoints):
-    if len(waypoints) > 10:
-        raise ValueError("A lista de waypoints deve conter no máximo 10 itens.")
-
-    gmaps = googlemaps.Client(key=api_key)
+def create_route(pedramoura_location, waypoints):
+    gmaps = googlemaps.Client(key=api_key.read())
 
     # Converter os endereços em uma string separada por "|"
     waypoints_str = "|".join(waypoints)
 
     # Request directions com otimização de waypoints
     now = datetime.now()
-    directions_result = gmaps.directions(origin=origin,
-                                         destination=destination,
+    directions_result = gmaps.directions(origin=pedramoura_location,
+                                         destination=pedramoura_location,
                                          waypoints=waypoints_str,
                                          optimize_waypoints=True,
                                          mode="driving",
