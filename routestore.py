@@ -24,25 +24,39 @@ def save(route_info):
     # get current data as route parameter
     current_date = datetime.date.today().strftime("%Y-%m-%d")
 
+    _id = convert_uuid(generate_uuid())
+
     cursor.execute("INSERT INTO DeliveryRoute (id, route, route_date) VALUES (?, ?, ?)",
-                   (generate_uuid(), json_text, current_date))
+                   (_id, json_text, current_date))
 
     conn.commit()
     cursor.close()
     conn.close()
+    return _id
 
 
 def get_by_id(_id):
     conn = sqlite3.connect(database_path)
     cursor = conn.cursor()
-    cursor.execute(f"SELECT route FROM DeliveryRoute WHERE id IS {convert_uuid(_id)}")
-    return cursor.fetchall()[0][0]
+    cursor.execute(f"SELECT route FROM DeliveryRoute WHERE id IS '{convert_uuid(_id)}'")
+    response = cursor.fetchall()[0][0]
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return response
 
 
 def delete(_id):
     conn = sqlite3.connect(database_path)
     cursor = conn.cursor()
-    cursor.execute(f"DELETE from DeliveryRoute WHERE id IS {convert_uuid(_id)}")
+    cursor.execute(f"DELETE from DeliveryRoute WHERE id IS '{convert_uuid(_id)}'")
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
     return {"status": "success"}
 
 
@@ -50,5 +64,5 @@ def generate_uuid():
     return uuid.uuid4()
 
 
-def convert_uuid(_id):
-    return uuid.UUID(_id)
+def convert_uuid(uuid):
+    return str(uuid)

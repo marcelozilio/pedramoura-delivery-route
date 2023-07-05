@@ -17,11 +17,13 @@ class DeliveryRoute(Resource):
         validation.validate_endereco_request(enderecos)
 
         directions = google_api.create_route(pedramoura_location, enderecos)
-        route_info = jsonify(directions)
 
-        routestore.save(route_info)
+        _id = routestore.save(jsonify(directions))
 
-        return route_info
+        return jsonify({
+            'id': str(_id),
+            'route': directions
+        })
 
 
 class DeliveryRouteById(Resource):
@@ -37,7 +39,7 @@ class DeliveryRouteById(Resource):
 
 
 api.add_resource(DeliveryRoute, '/delivery-route')
-api.add_resource(DeliveryRouteById, '/delivery-route/<id>')
+api.add_resource(DeliveryRouteById, '/delivery-route/<_id>')
 
 if __name__ == '__main__':
     app.run()
