@@ -1,20 +1,21 @@
 import sqlite3
 import datetime
+import uuid
 
 database_path = "pedramoura.db"
 
+
 def save(route_info):
     # convert flask json type to plain text
-    json_text = route_info.get_data(as_text=True) 
+    json_text = route_info.get_data(as_text=True)
 
-    # connect to db (local file)
     conn = sqlite3.connect(database_path)
     cursor = conn.cursor()
-    
+
     # create table if it doesn't exist
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS DeliveryRoute (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id TEXT PRIMARY KEY,
             route TEXT NOT NULL,
             route_date TEXT NOT NULL
         );
@@ -23,25 +24,45 @@ def save(route_info):
     # get current data as route parameter
     current_date = datetime.date.today().strftime("%Y-%m-%d")
 
-    # insert json text into table
-    cursor.execute("INSERT INTO DeliveryRoute (route, route_date) VALUES (?, ?)", (json_text, current_date))
+    _id = convert_uuid(generate_uuid())
 
-    # commit to db
+    cursor.execute("INSERT INTO DeliveryRoute (id, route, route_date) VALUES (?, ?, ?)",
+                   (_id, json_text, current_date))
+
     conn.commit()
+    cursor.close()
+    conn.close()
+    return _id
 
 
-    # debug only, query data from RotaEntrega
-    # cursor.execute("SELECT id, route_date FROM DeliveryRoute")
-    # for route in cursor.fetchall():
-    #     print(route)
+def get_by_id(_id):
+    conn = sqlite3.connect(database_path)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT route FROM DeliveryRoute WHERE id IS '{convert_uuid(_id)}'")
+    response = cursor.fetchall()[0][0]
 
-    # close database
+    conn.commit()
     cursor.close()
     conn.close()
 
+    return response
 
-def load(id):
+
+def delete(_id):
     conn = sqlite3.connect(database_path)
     cursor = conn.cursor()
-    cursor.execute(f"SELECT route FROM DeliveryRoute WHERE id IS {id}")
-    return cursor.fetchall()[0][0]
+    cursor.execute(f"DELETE from DeliveryRoute WHERE id IS '{convert_uuid(_id)}'")
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return {"status": "success"}
+
+
+def generate_uuid():
+    return uuid.uuid4()
+
+
+def convert_uuid(uuid):
+    return str(uuid)
