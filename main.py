@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 import google_api
+import routestore
 
 
 app = Flask(__name__)
@@ -19,9 +20,13 @@ class DeliveryRoute(Resource):
 
         directions = google_api.create_route(origin, destination, waypoints)
 
-        # Salvar no banco de dados
+        # converte retorno da api para json
+        route_info = jsonify(directions)
 
-        return jsonify(directions)
+        # Salvar no banco de dados
+        routestore.save(route_info)
+
+        return route_info
 
 
 class DeliveryRouteById(Resource):
