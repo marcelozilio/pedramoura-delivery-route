@@ -73,6 +73,9 @@ instance/
 # Keys
 keys/
 
+# Maps
+maps/
+
 # Sphinx documentation
 docs/_build/
 
