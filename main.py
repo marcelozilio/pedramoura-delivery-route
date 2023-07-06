@@ -3,11 +3,12 @@ from flask_restful import Resource, Api
 import google_api
 import routestore
 import validation
+import maps
 
 app = Flask(__name__)
 api = Api(app)
 
-pedramoura_location = "Rolante, RS, 95690-000, Brasil"
+pedramoura_location = "Rolante, RS, Brasil"
 
 
 class DeliveryRoute(Resource):
@@ -16,13 +17,15 @@ class DeliveryRoute(Resource):
 
         validation.validate_endereco_request(enderecos)
 
-        directions = google_api.create_route(pedramoura_location, enderecos)
+        directions_result = google_api.create_route(pedramoura_location, enderecos)
 
-        _id = routestore.save(jsonify(directions))
+        _id = routestore.save(jsonify(directions_result))
+
+        maps.create_map(directions_result, _id)
 
         return jsonify({
             'id': str(_id),
-            'route': directions
+            'route': directions_result
         })
 
 
