@@ -29,14 +29,50 @@ WARNING: This is a development server. Do not use it in a production deployment.
 Press CTRL+C to quit
 ```
 
-### Inserting new route to data base
+## API
 
+### Inserting route into database
 
+Request to create map
+```bash
+curl -X POST
+\ -H "Content-Type: application/json" 
+\ -d '{"enderecos": ["Rua José Bonifácio 544 Gravataí", ""]}' 
+\ URL 'http://127.0.0.1:5000/delivery-route'
+```
+Response success:
 
+```bash
+{
+    "id": "99b90b23-a4f7-4c3d-9ab6-5f9c576ac547",
+    "route": [
+        {
+    ...
+}
+```
+The ``id`` field may be used to retrieve route information.
 
+### Getting route from database by ID
+Request to get map
+```bash
+curl -X GET
+\ -H "Content-Type: application/json" 
+\ URL 'http://127.0.0.1:5000/delivery-route/99b90b23-a4f7-4c3d-9ab6-5f9c576ac547'
+```
+Response success:
 
-### Retrieving route from data base by ID
-
-
-
-
+```bash
+[
+    {
+        "bounds": {
+            "northeast": {
+                "lat": -29.6300501,
+                "lng": -50.57674429999999
+            },
+            "southwest": {
+                "lat": -29.7634869,
+                "lng": -51.15344160000001
+            }
+        },
+     ...
+]```
