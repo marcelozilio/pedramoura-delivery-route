@@ -1,4 +1,5 @@
 import googlemaps
+import maps
 from datetime import datetime
 
 api_key = open('keys/googlemaps-api-key.txt')
@@ -20,5 +21,7 @@ def create_route(pedramoura_location, waypoints):
                                          departure_time=now,
                                          language="pt-BR",
                                          units="metric")
+
+    maps.create_map(directions_result)
 
     return directions_result
