@@ -45,4 +45,4 @@ api.add_resource(DeliveryRoute, '/delivery-route')
 api.add_resource(DeliveryRouteById, '/delivery-route/<_id>')
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=5000)
